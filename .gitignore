@@ -1,4 +1,11 @@
-# Datasets y archivos grandes
+# Exclusión de fuentes LaTeX y documentos de tesis
+TESIS_LATEX/
+scratch/
+notebooks/obsolete_backup/
+src/obsolete_backup/
+.vscode/
+
+# Datasets y archivos pesados
 MERGED_CSV/
 data/
 *.csv
@@ -6,25 +13,12 @@ data/
 *.h5
 *.zip
 *.tar.gz
-
-# PDFs descargados y modelos de referencia
 *.pdf
 
 # Modelos pesados binarios
 *.joblib
 *.pkl
 *.bin
-*.onnx
-
-# LaTeX temporales
-*.aux
-*.fdb_latexmk
-*.fls
-*.log
-*.out
-*.synctex.gz
-*.toc
-*.xdv
 
 # Entornos virtuales y cache
 .venv/
