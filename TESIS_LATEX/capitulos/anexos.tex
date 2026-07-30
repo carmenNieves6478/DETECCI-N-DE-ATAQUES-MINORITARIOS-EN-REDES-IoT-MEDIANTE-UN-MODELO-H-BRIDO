@@ -1,0 +1,107 @@
+\chapter*{ANEXOS}
+\addcontentsline{toc}{chapter}{Anexos}
+\markboth{ANEXOS}{ANEXOS}
+
+\section*{Anexo 1: Repositorio Oficial en GitHub y Código Fuente del Proyecto}
+El código fuente completo de la investigación, los scripts de preprocesamiento, los notebooks de Jupyter ordenados secuencialmente por fases CRISP-DM, las rutinas de perfilado computacional y la documentación técnica han sido alojados e hipervinculados de forma pública en el repositorio de GitHub:
+
+\vspace{0.5em}
+\noindent \textbf{URL del Repositorio Oficial en GitHub:} \\
+\url{https://github.com/carmenNieves6478/DETECCI-N-DE-ATAQUES-MINORITARIOS-EN-REDES-IoT-MEDIANTE-UN-MODELO-H-BRIDO.git}
+
+\vspace{0.8em}
+\section*{Anexo 2: Matriz de Operacionalización de Variables}
+La Matriz de Operacionalización de Variables detalla la estructuración conceptual y operacional de la Variable Independiente (\textit{Modelo Híbrido Stacking con Random Forest, XGBoost GPU, LightGBM, Entropía de Shannon y Borderline-SMOTE1}) y la Variable Dependiente (\textit{Eficacia en la Detección de Ataques Minoritarios y Desempeño Computacional en Redes IoT}). Se encuentra integrada formalmente en la Tabla 1.1 del Capítulo I (Página 12).
+
+\vspace{0.8em}
+\section*{Anexo 3: Resumen de Hiperparámetros Óptimos del Modelo Híbrido Stacking}
+\begin{table}[H]
+\centering
+\caption{Hiperparámetros óptimos seleccionados para los clasificadores del ensamble}
+\label{tab:hiperparametros_anexo2}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{4.0cm} p{10.0cm}}
+\toprule
+\textbf{Componente / Modelo} & \textbf{Configuración de Hiperparámetros Óptimos} \\
+\midrule
+\textbf{Random Forest (Nivel 0)} & \texttt{n\_estimators}=100, \texttt{max\_depth}=12, \texttt{criterion}='gini', \texttt{bootstrap}=True, \texttt{random\_state}=42. \\
+\textbf{XGBoost GPU (Nivel 0)} & \texttt{n\_estimators}=100, \texttt{max\_depth}=6, \texttt{learning\_rate}=0.2, \texttt{tree\_method}='hist', \texttt{device}='cuda', \texttt{eval\_metric}='mlogloss'. \\
+\textbf{LightGBM Base (Nivel 0)} & \texttt{n\_estimators}=100, \texttt{max\_depth}=6, \texttt{learning\_rate}=0.1, \texttt{boosting\_type}='gbdt', \texttt{subsample}=0.8, \texttt{colsample\_bytree}=0.8. \\
+\textbf{Borderline-SMOTE1} & \texttt{kind}='borderline-1', \texttt{k\_neighbors}=5, \texttt{m\_neighbors}=10, \texttt{sampling\_strategy}=\{Web-based: 50000, Brute Force: 50000\}. \\
+\textbf{Meta-LightGBM (Nivel 1)} & \texttt{n\_estimators}=100, \texttt{learning\_rate}=0.05, \texttt{num\_leaves}=31, \texttt{max\_depth}=6, \texttt{subsample}=0.8, \texttt{colsample\_bytree}=0.8. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{0.8em}
+\section*{Anexo 4: Reporte de Resultados de la Prueba Estadística de Wilcoxon}
+\begin{table}[H]
+\centering
+\caption{Prueba de Rangos con Signo de Wilcoxon sobre 30 bloques independientes}
+\label{tab:wilcoxon_anexo2}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{5.0cm} c c c}
+\toprule
+\textbf{Par de Comparación} & \textbf{Estadístico $W^+$} & \textbf{$p$-valor Calculado} & \textbf{Significativo ($\alpha=0.05$)} \\
+\midrule
+Stacking Híbrido vs. XGBoost GPU & 95.0 & 0.003744 & SÍ \\
+Stacking Híbrido vs. LightGBM Base & 74.0 & 0.000667 & SÍ \\
+Stacking Híbrido vs. Random Forest & 0.0 & $1.86 \times 10^{-9}$ & SÍ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{0.8em}
+\section*{Anexo 5: Script de Preprocesamiento y Rebalanceo Borderline-SMOTE1}
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import RobustScaler
+from imblearn.over_sampling import BorderlineSMOTE
+
+# 1. Carga del conjunto de datos procesado
+df_train = pd.read_csv('data/processed/train_data.csv')
+X_train = df_train.drop(columns=['label'])
+y_train = df_train['label']
+
+# 2. Escalado Robusto Adaptativo
+scaler = RobustScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+
+# 3. Sobremuestreo sintético en la frontera
+smote = BorderlineSMOTE(kind='borderline-1', random_state=42)
+X_resampled, y_resampled = smote.fit_resample(X_train_scaled, y_train)
+\end{verbatim}
+
+\vspace{0.8em}
+\section*{Anexo 6: Script de Extracción de Entropía de Shannon en Meta-Features}
+\begin{verbatim}
+import numpy as np
+
+def calcular_entropia_shannon(probabilidades, epsilon=1e-15):
+    """Calcula la Entropia de Shannon sobre vectores de probabilidad multiclase."""
+    probabilidades = np.clip(probabilidades, epsilon, 1.0)
+    entropia = -np.sum(probabilidades * np.log2(probabilidades), axis=1)
+    return entropia
+
+# Extraccion de meta-caracteristicas fuera de pliegue (OOF)
+H_rf = calcular_entropia_shannon(prob_rf_oof)
+H_xgb = calcular_entropia_shannon(prob_xgb_oof)
+H_lgb = calcular_entropia_shannon(prob_lgb_oof)
+
+# Construccion del tensor Z in R^(N x 27)
+Z_meta = np.column_stack([
+    prob_rf_oof, prob_xgb_oof, prob_lgb_oof,
+    H_rf, H_xgb, H_lgb
+])
+\end{verbatim}
+
+\vspace{0.8em}
+\section*{Anexo 7: Declaración Jurada de Autenticidad de Tesis y Depósito}
+La Declaración Jurada de Autenticidad de Tesis y la Autorización de Depósito Digital en el Repositorio Institucional de la Universidad Nacional del Altiplano se encuentran adjuntas al expediente administrativo oficial del informe final.

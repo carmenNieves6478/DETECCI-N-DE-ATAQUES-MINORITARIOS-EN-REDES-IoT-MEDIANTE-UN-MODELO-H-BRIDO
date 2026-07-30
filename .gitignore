@@ -15,8 +15,10 @@ data/
 *.tar.gz
 *.pdf
 
-# Excepcion para la presentacion, la tesis en Word/PDF y el articulo IEEE
+# Excepcion para la tesis master en PDF y Word, presentacion y articulo IEEE
+!main.pdf
 !main.docx
+!TESIS_LATEX/main.pdf
 !TESIS_LATEX/main.docx
 !presentacion_tesis.pdf
 !presentacion_tesis.tex

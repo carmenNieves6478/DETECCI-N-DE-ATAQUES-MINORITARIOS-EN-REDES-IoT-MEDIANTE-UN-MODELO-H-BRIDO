@@ -1,0 +1,330 @@
+\chapter{MATERIALES Y MÉTODOS}
+
+\section{Diseño Metodológico}
+
+\subsection{Tipo de Investigación}
+La presente investigación se clasifica como de tipo \textbf{Aplicada}, dado que está orientada a la solución práctica, técnica e innovadora de un problema cibernético crítico en la infraestructura digital contemporánea: la severa degradación predictiva de los Sistemas de Detección de Intrusiones (IDS) convencionales ante ciberataques de baja frecuencia o minoritarios (\textit{Web-based} y \textit{Brute Force}) en redes del Internet de las Cosas (IoT).
+
+Asimismo, posee un enfoque \textbf{Cuantitativo}, puesto que la eficacia predictiva y la viabilidad computacional de la arquitectura propuesta se miden de forma numérica, objetiva y probabilística a través de indicadores empíricos estandarizados (\textit{F1-Macro}, \textit{Recall}, \textit{Precision}, \textit{Accuracy}, latencia de inferencia en microsegundos $\mu s$ y ocupación de memoria RAM en megabytes MB), validados mediante pruebas de hipótesis no paramétricas de significancia estadística.
+
+\subsection{Diseño de Investigación y Control de Variables}
+El diseño de investigación adoptado es \textbf{Experimental}, de nivel \textbf{Cuasi-experimental} con grupo de control equivalente. En un entorno de simulación computacional controlado a nivel de laboratorio, se manipula intencionalmente la \textbf{Variable Independiente} (la arquitectura híbrida Stacking integrada por Random Forest, XGBoost GPU y LightGBM con cuantificación de incertidumbre por Entropía de Shannon y sobremuestreo adaptativo Borderline-SMOTE1) para evaluar su efecto directo sobre la \textbf{Variable Dependiente} (la eficacia en la detección de ataques minoritarios y el desempeño computacional en redes IoT).
+
+Para garantizar el rigor científico, la validez interna y el control de variables de confusión, el rendimiento de la arquitectura híbrida propuesto se contrasta empíricamente contra seis modelos de control independientes:
+\begin{enumerate}
+    \item Random Forest individual sin rebalanceo.
+    \item XGBoost GPU individual sin rebalanceo.
+    \item LightGBM individual sin rebalanceo.
+    \item Random Forest con sobremuestreo Borderline-SMOTE1.
+    \item XGBoost GPU con sobremuestreo Borderline-SMOTE1.
+    \item LightGBM con sobremuestreo Borderline-SMOTE1.
+\end{enumerate}
+
+\subsection{Marco de Trabajo Metodológico: CRISP-DM Adaptado}
+La ejecución del proyecto sigue el marco de trabajo estándar internacional \textbf{CRISP-DM} (\textit{Cross-Industry Standard Process for Data Mining}), estructurado de forma secuencial en 15 pasos computacionales distribuidos en 6 fases metodológicas:
+
+\begin{table}[H]
+\centering
+\caption{Fases metodológicas de CRISP-DM y su mapeo con los notebooks del proyecto}
+\label{tab:crisp_dm_mm}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{3.5cm} X p{4.0cm}}
+\toprule
+\textbf{Fase CRISP-DM} & \textbf{Actividades y Pasos Métodológicos} & \textbf{Artefacto / Notebook} \\
+\midrule
+\textbf{1. Comprensión del Negocio} & Paso 1: Definición del problema de sesgo algorítmico y desbalance en redes IoT. & \texttt{capitulos/introduccion.tex} \\
+\textbf{2. Comprensión de los Datos} & Paso 2: Ingesta de 63 archivos CSV de la página oficial de CICIoT2023. \newline Paso 3: Análisis Exploratorio de Datos (EDA) y distribución de 8 clases. & \texttt{notebooks/01\_EDA.ipynb} \\
+\textbf{3. Preparación de los Datos} & Paso 4: Limpieza de valores nulos, infinitos y eliminación de duplicados. \newline Paso 5: Escalado robusto adaptativo (\textit{RobustScaler}). \newline Paso 6: Selección de 29 variables por Gini e Información Mutua. \newline Paso 7: Sobremuestreo adaptativo Borderline-SMOTE1 en entrenamiento. & \texttt{notebooks/02\_preprocesamiento.ipynb} \\
+\textbf{4. Modelado de Nivel 0} & Paso 8: Entrenamiento OOF 3-Fold de Random Forest, XGBoost GPU y LightGBM. \newline Paso 9: Extracción de 24 probabilidades de clase. \newline Paso 10: Cuantificación entrópica ($H_{\mathrm{RF}}, H_{\mathrm{XGB}}, H_{\mathrm{LGB}}$) conformando $Z \in \mathbb{R}^{27}$. & \texttt{notebooks/03\_modelos\_base.ipynb} \\
+\textbf{5. Modelado de Nivel 1} & Paso 11: Optimización del meta-modelo LightGBM con \texttt{GridSearchCV}. \newline Paso 12: Ensamblado de la arquitectura Stacking Híbrida. & \texttt{notebooks/04\_modelo\_hibrido.ipynb} \\
+\textbf{6. Evaluación y Validación} & Paso 13: Inferencia sobre el conjunto de prueba aislado (377,383 muestras). \newline Paso 14: Perfilado de latencia ($\mu s$) y uso de memoria RAM (MB). \newline Paso 15: Validación de significancia mediante la Prueba de Wilcoxon. & \texttt{notebooks/05\_resultados\_finales.ipynb} \\
+\bottomrule
+\end{tabularx}
+\\[5pt]
+\begin{minipage}{\textwidth}
+\small \textit{Nota.} Diseñado conforme a las fases del ciclo de vida del modelo computacional.
+\end{minipage}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\caption{Flujo metodológico CRISP-DM adaptado a la investigación}
+\label{fig:crisp_dm_diagrama_mm}
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    box/.style={rectangle, draw=black, rounded corners, fill=blue!5, text width=3.5cm, align=center, minimum height=1.2cm},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Nodos
+\node[box] (bus) {\textbf{1. Comprensión} \\ del Negocio};
+\node[box, right=of bus] (data) {\textbf{2. Comprensión} \\ de los Datos};
+\node[box, below=of data] (prep) {\textbf{3. Preparación} \\ de los Datos};
+\node[box, left=of prep] (mod0) {\textbf{4. Modelado} \\ Nivel 0};
+\node[box, below=of mod0] (mod1) {\textbf{5. Modelado} \\ Nivel 1};
+\node[box, right=of mod1] (eval) {\textbf{6. Evaluación} \\ y Validación};
+
+% Flechas
+\draw[arrow] (bus) -- (data);
+\draw[arrow] (data) -- (prep);
+\draw[arrow] (prep) -- (mod0);
+\draw[arrow] (mod0) -- (mod1);
+\draw[arrow] (mod1) -- (eval);
+\draw[arrow, dashed] (eval) -- ++(3cm,0) |- (bus); % Feedback
+
+\end{tikzpicture}
+\end{figure}
+
+\section{Unidades de Análisis, Población y Muestra}
+
+\subsection{Población Objetivo y Procedencia del Dataset}
+La población de estudio comprende la totalidad de flujos de paquetes de red generados en la topología física real del conjunto de datos internacional \textbf{CICIoT2023}, desarrollado por el \textit{Canadian Institute for Cybersecurity} (CIC) de la Universidad de New Brunswick. Este repositorio registró la actividad de comunicación de 33 dispositivos físicos IoT reales (cámaras de seguridad IP, altavoces inteligentes, termostatos, concentradores domóticos y sensores ambientales) sometidos a 33 vectores de ciberataque agrupados en 8 categorías operativas principales. La población original comprende \textbf{63 archivos CSV descomprimidos} con un total superior a \textbf{105 millones de registros de flujo de red}.
+
+\subsection{Técnica de Muestreo Estratificado y Partición Experimental}
+Para garantizar la viabilidad computacional en el procesamiento en memoria sin degradar la representatividad estadística del tráfico real, se ejecutó un muestreo probabilístico estratificado que preservó exactamente la proporción a priori de las 8 categorías de tráfico de la fuente oficial.
+
+\begin{table}[H]
+\centering
+\caption{Distribución de clases en la muestra consolidada y la partición experimental (Train/Test)}
+\label{tab:distribucion_muestra_mm}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{3.0cm} p{2.5cm} p{2.5cm} p{2.5cm} X}
+\toprule
+\textbf{Categoría de Tráfico} & \textbf{Muestra Consolidada} & \textbf{Entrenamiento (80\% Train)} & \textbf{Prueba Aislada (20\% Test)} & \textbf{Proporción \% y Tipo de Clase} \\
+\midrule
+DDoS & 1,855,937 & 356,341 & 148,475 & 73.77\% (Mayoritaria) \\
+DoS & 461,843 & 88,674 & 36,947 & 18.36\% (Mayoritaria) \\
+Mirai & 109,796 & 21,080 & 8,784 & 4.36\% (Secundaria) \\
+Benign & 48,071 & 9,229 & 3,846 & 1.91\% (Benigno) \\
+Spoofing & 22,233 & 4,269 & 1,779 & 0.88\% (Secundaria) \\
+Reconnaissance & 10,757 & 2,065 & 861 & 0.43\% (Minoritaria) \\
+Brute Force & 3,696 & 710 & 295 & 0.15\% (Minoritaria) \\
+Web-based & 3,556 & 683 & 396 & 0.14\% (Minoritaria Crítica) \\
+\midrule
+\textbf{Total Flujos} & \textbf{2,515,889} & \textbf{483,169} & \textbf{377,383} & \textbf{100.00\%} \\
+\bottomrule
+\end{tabularx}
+\\[5pt]
+\begin{minipage}{\textwidth}
+\small \textit{Nota.} Datos procesados a partir de los 63 archivos oficiales de CICIoT2023 en \texttt{01\_EDA.ipynb}.
+\end{minipage}
+\end{table}
+
+Las tres particiones experimentales se definen de la siguiente manera:
+\begin{enumerate}
+    \item \textbf{Muestra Consolidada ($N_{\mathrm{total}} = 2,515,889$):} Tensor maestro procesado desde los 63 archivos CSV oficiales.
+    \item \textbf{Conjunto de Entrenamiento ($N_{\mathrm{train}} = 483,169$):} Subconjunto de entrenamiento utilizado para el ajuste de los clasificadores base y la aplicación exclusiva del sobremuestreo sintético Borderline-SMOTE1.
+    \item \textbf{Conjunto de Prueba Aislado ($N_{\mathrm{test}} = 377,383$):} Subconjunto independiente retenido e inviolable durante todas las fases de entrenamiento y sintonización de hiperparámetros, reservado únicamente para la evaluación final de generalización.
+\end{enumerate}
+
+\section{Procedimiento de Tratamiento y Preprocesamiento del Dataset}
+
+El tratamiento del dataset se desarrolló mediante un flujo procedimental riguroso diseñado para depurar la información, acondicionarla geométricamente y rebalancear la distribución de clases antes de alimentar la arquitectura de entrenamiento.
+
+\begin{figure}[H]
+\centering
+\caption{Diagrama de flujo del pipeline de preprocesamiento de datos}
+\label{fig:pipeline_preprocesamiento_mm}
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    block/.style={rectangle, draw=blue!70!black, fill=blue!8, thick, text width=11.5cm, minimum height=0.9cm, align=center, rounded corners=3pt},
+    arrow/.style={->, >=stealth, thick, line width=1pt, draw=blue!70!black}
+]
+
+\node[block] (step1) {\textbf{1. Lectura e Ingesta de Datos} \\ Consolidación de los 63 archivos CSV del dataset CICIoT2023 ($N = 2,515,889$ registros)};
+\node[block, below=of step1] (step2) {\textbf{2. Depuración e Higiene de Datos} \\ Eliminación de valores nulos, infinitos y registros duplicados};
+\node[block, below=of step2] (step3) {\textbf{3. Selección de Atributos} \\ Reducción de 47 a 29 características según importancia de Gini e Información Mutua};
+\node[block, below=of step3] (step4) {\textbf{4. Escalado Robusto Adaptativo} \\ Transformación de características continuas mediante RobustScaler (Mediana e IQR)};
+\node[block, below=of step4] (step5) {\textbf{5. División Estratificada} \\ Separación en Entrenamiento (80\%) y Prueba Aislado (20\%)};
+\node[block, below=of step5] (step6) {\textbf{6. Balanceo Adaptativo de Frontera} \\ Aplicación de Borderline-SMOTE1 exclusivamente al conjunto de Entrenamiento};
+
+\draw[arrow] (step1) -- (step2);
+\draw[arrow] (step2) -- (step3);
+\draw[arrow] (step3) -- (step4);
+\draw[arrow] (step4) -- (step5);
+\draw[arrow] (step5) -- (step6);
+
+\end{tikzpicture}
+\end{figure}
+
+\subsection{Depuración de Datos: Tratamiento de Duplicados, Valores Nulos e Infinitos}
+Durante la etapa de ingesta inicial, se identificaron registros distorsionados originados por errores en la captura de tráfico o divisiones matemáticas indefinidas (como tasas de transferencia divididas por duraciones nulas). 
+
+El proceso de saneamiento incluyó:
+\begin{enumerate}
+    \item \textbf{Imputación y Eliminación de Nulos/Infinitos:} Se identificaron valores no numéricos (\texttt{NaN}) y valores infinitos (\texttt{Inf}), procediendo a la eliminación de las filas afectadas para preservar la integridad estadística.
+    \item \textbf{Depuración de Duplicados:} Se removieron registros idénticos consecutivos generados por retransmisiones de paquetes en la red, asegurando que cada instancia represente una transacción única.
+\end{enumerate}
+
+\subsection{Selección de Atributos y Normalización con RobustScaler}
+De las 47 características originales del dataset, se aplicó un filtro de selección de características basado en la varianza y la importancia de impureza de Gini obtenida mediante Random Forest, reduciendo el espacio vectorial a las 29 variables presentadas en la Tabla \ref{tab:variables_seleccionadas_mm2}.
+
+\begin{table}[H]
+\centering
+\caption{Vector de 29 características de red seleccionadas para el modelado}
+\label{tab:variables_seleccionadas_mm2}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{4.5cm} X p{3.0cm}}
+\toprule
+\textbf{Categoría de Atributo} & \textbf{Variables Específicas de Red} & \textbf{Métrica Base} \\
+\midrule
+\textbf{Métricas de Paquetes} & \texttt{flow\_duration}, \texttt{Header\_Length}, \texttt{Protocol\_Type}, \texttt{Duration}, \texttt{Rate}, \texttt{Srate}, \texttt{Drate} & Tasas y duraciones de flujo \\
+\textbf{Banderas TCP/IP} & \texttt{fin\_flag\_number}, \texttt{syn\_flag\_number}, \texttt{rst\_flag\_number}, \texttt{psh\_flag\_number}, \texttt{ack\_flag\_number}, \texttt{ece\_flag\_number}, \texttt{cwr\_flag\_number} & Control de sesión TCP \\
+\textbf{Estadísticas de Tamaño} & \texttt{ack\_count}, \texttt{syn\_count}, \texttt{fin\_count}, \texttt{urg\_count}, \texttt{rst\_count}, \texttt{HTTP}, \texttt{HTTPS}, \texttt{DNS}, \texttt{Telnet}, \texttt{SMTP}, \texttt{SSH}, \texttt{IRC}, \texttt{TCP}, \texttt{UDP}, \texttt{DHCP} & Contadores y protocolos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Posteriormente, debido a la alta dispersión de las métricas de red y a la presencia de valores atípicos severos originados por ataques de denegación de servicio (DDoS), se aplicó el algoritmo \textbf{RobustScaler}:
+\begin{equation}
+x^{\prime} = \frac{x - \mathrm{Mediana}(x)}{\mathrm{IQR}(x)}
+\end{equation}
+A diferencia de Min-Max o Z-Score, este método evita que los valores extremos aplasten la escala del tráfico normal.
+
+\subsection{Rebalanceo de Clases Minoritarias mediante Borderline-SMOTE1}
+Para mitigar el sesgo hacia las clases mayoritarias, se aplicó el algoritmo \textbf{Borderline-SMOTE1} sobre el conjunto de entrenamiento ($N_{\mathrm{train}} = 483,169$). A diferencia de SMOTE convencional, este algoritmo identifica las muestras de las clases minoritarias (\textit{Web-based} y \textit{Brute Force}) que se encuentran en el límite de decisión con las clases mayoritarias ($S_{\mathrm{danger}}$) y genera observaciones sintéticas mediante interpolación en dicha región.
+
+\section{Entorno de Instrumentación y Desarrollo}
+
+El marco tecnológico utilizado para la preparación de los tensores, el entrenamiento acelerado por hardware y la evaluación estadística se detalla a continuación.
+
+\subsection{Especificaciones de Hardware}
+\begin{table}[H]
+\centering
+\caption{Especificaciones del entorno de hardware empleado en la investigación}
+\label{tab:hardware_2_mm}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{4.0cm} X}
+\toprule
+\textbf{Componente de Hardware} & \textbf{Especificación Técnica y Capacidad Operativa} \\
+\midrule
+\textbf{Procesador (CPU)} & Intel Core i7 multinúcleo de 13ª generación a 3.40 GHz (16 núcleos lógicos), utilizado para las rutinas de sobremuestreo Borderline-SMOTE1 y cálculo de Entropía de Shannon. \\
+\textbf{Memoria Principal (RAM)} & 32 GB DDR5 a 4800 MHz, indispensable para mantener los tensores de 2.51 millones de registros en memoria sin desbordamiento (\textit{Out-of-Memory}). \\
+\textbf{Unidad Gráfica (GPU)} & NVIDIA GeForce RTX 5070 Ti Laptop GPU con microarquitectura Ada Lovelace. \\
+\textbf{Memoria Gráfica (VRAM)} & 12 GB GDDR6 dedicados a la aceleración de cómputo en paralelo mediante kernels CUDA. \\
+\textbf{Almacenamiento} & 1 TB SSD NVMe M.2 PCIe 4.0 con tasas de lectura superior a 5,000 MB/s para la ingesta de los 63 archivos CSV. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Entorno de Software, Librerías y Artefactos de Código}
+\begin{table}[H]
+\centering
+\caption{Plataforma de software, entorno virtual y librerías utilizadas}
+\label{tab:software_2_mm}
+\small
+
+
+
+\begin{tabularx}{\textwidth}{p{4.0cm} X}
+\toprule
+\textbf{Herramienta de Software} & \textbf{Versión y Función Específica en la Investigación} \\
+\midrule
+\textbf{Sistema Operativo} & Linux Ubuntu 22.04 LTS bajo el Subsistema de Windows para Linux (WSL2 en Windows 11 Pro 64-bit). \\
+\textbf{Entorno de Ejecución} & Anaconda / Miniconda 23.11 con entorno virtual aislado \texttt{tesis\_iot}. \\
+\textbf{Lenguaje de Programación} & Python 3.10.13 de 64 bits. \\
+\textbf{Aceleración por GPU} & NVIDIA CUDA Toolkit 13.2 / PyTorch 2.1.2 cu121. \\
+\textbf{Modelado Gradient Boosting} & \texttt{xgboost} v2.0.3 (configurado con \texttt{device='cuda'}, \texttt{tree\_method='hist'}) y \texttt{lightgbm} v4.2.0. \\
+\textbf{Modelado y Preprocesamiento} & \texttt{scikit-learn} v1.3.2 (\textit{RobustScaler}, \textit{RandomForestClassifier}, \textit{GridSearchCV}). \\
+\textbf{Rebalanceo Sintético} & \texttt{imbalanced-learn} v0.11.0 (\textit{BorderlineSMOTE}). \\
+\textbf{Procesamiento de DataFrames} & \texttt{pandas} v2.1.4 y \texttt{numpy} v1.26.2 para vectorización rápida. \\
+\textbf{Validación Estadística} & \texttt{scipy} v1.11.4 (\texttt{scipy.stats.wilcoxon} para prueba no paramétrica). \\
+\textbf{Perfilado de Rendimiento} & Módulos \texttt{time.perf\_counter()} para latencia ($\mu s$) y \texttt{psutil} / \texttt{tracemalloc} para memoria RAM. \\
+\textbf{Compilador LaTeX} & Tectonic v0.15.0 para la generación del informe final de tesis. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Plan de Validación, Replicabilidad y Control de Amenazas}
+
+\subsection{Procedimiento de Experimentación y Entrenamiento del Modelo}
+El flujo procedimental para la construcción y evaluación del modelo híbrido se ejecutó en 5 etapas secuenciales:
+
+\begin{enumerate}
+    \item \textbf{Ingesta y Limpieza:} Se cargaron los 63 archivos CSV raw. Se eliminaron valores nulos (\texttt{NaN}) y valores infinitos (\texttt{Inf}) provocados por divisiones por cero en las tasas de paquetes originales.
+    \item \textbf{Escalado Robusto:} Se ajustó la instancia \texttt{RobustScaler()} sobre el 80\% del conjunto de entrenamiento y se transformó la totalidad de los datos sin fuga de información.
+    \item \textbf{Sobremuestreo Sintético en la Frontera:} Se ejecutó el objeto \texttt{BorderlineSMOTE(kind='borderline-1', random\_state=42)} exclusivamente sobre $X_{\mathrm{train}}$, reequilibrando las clases minoritarias (\textit{Web-based} y \textit{Brute Force}) únicamente en su zona de intersección con la clase benigna.
+    \item \textbf{Extracción de Meta-Features y Ensamble Stacking:} Mediante 3-Fold Stratified Cross-Validation sobre el conjunto de entrenamiento, los modelos base (Random Forest, XGBoost GPU y LightGBM) produjeron 24 probabilidades de clase fuera de pliegue (OOF). Se calcularon las 3 entropías de Shannon $H_{\mathrm{RF}}, H_{\mathrm{XGB}}, H_{\mathrm{LGB}}$ concatenando el tensor $Z_{\mathrm{train}} \in \mathbb{R}^{483,169 \times 27}$.
+    \item \textbf{Ajuste del Meta-Modelo Nivel 1:} Se ejecutó \texttt{GridSearchCV} sobre el meta-clasificador LightGBM evaluando los siguientes hiperparámetros óptimos:
+    \begin{itemize}
+        \item \texttt{n\_estimators}: 100
+        \item \texttt{learning\_rate}: 0.05
+        \item \texttt{num\_leaves}: 31
+        \item \texttt{max\_depth}: 6
+        \item \texttt{subsample}: 0.8
+        \item \texttt{colsample\_bytree}: 0.8
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\caption{Arquitectura del Modelo Híbrido Stacking con Entropía de Shannon}
+\label{fig:arquitectura_stacking_mm}
+\begin{tikzpicture}[
+    node distance=0.8cm and 1cm,
+    base/.style={rectangle, draw=black, rounded corners, align=center, minimum height=1cm, fill=white},
+    layer/.style={rectangle, draw=gray, dashed, inner sep=0.3cm},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Entrada
+\node[base, fill=green!10, minimum width=6cm] (input) {\textbf{Entrada: Dataset CICIoT2023} \\ (29 características preprocesadas)};
+
+% Nivel 0
+\node[base, fill=blue!10, below left=1.2cm and -1.5cm of input] (rf) {\textbf{Random Forest} \\ $H_{RF}, P_{RF}$};
+\node[base, fill=blue!10, right=0.5cm of rf] (xgb) {\textbf{XGBoost} \\ $H_{XGB}, P_{XGB}$};
+\node[base, fill=blue!10, right=0.5cm of xgb] (lgb) {\textbf{LightGBM} \\ $H_{LGB}, P_{LGB}$};
+
+\begin{pgfonlayer}{background}
+\node[layer, fit=(rf) (xgb) (lgb), fill=gray!5, label={[anchor=south]above:\textbf{Modelos Base (Nivel 0)}}] (layer0) {};
+\end{pgfonlayer}
+
+% Extraccion de meta-features
+\node[base, fill=yellow!15, minimum width=6cm, below=1.2cm of layer0] (meta) {\textbf{Vector de Meta-Features $Z \in \mathbb{R}^{27}$} \\ (24 Probabilidades + 3 Entropías)};
+
+% Nivel 1
+\node[base, fill=red!10, minimum width=4cm, below=1.2cm of meta] (metalgb) {\textbf{Meta-Modelo (Nivel 1)} \\ LightGBM};
+
+% Salida
+\node[base, fill=green!10, minimum width=4cm, below=1cm of metalgb] (output) {\textbf{Predicción de 8 Clases} \\ (DDoS, DoS, Mirai, \dots, Web-based)};
+
+% Flechas
+\draw[arrow] (input) -- (layer0);
+\draw[arrow] (rf) -- (meta);
+\draw[arrow] (xgb) -- (meta);
+\draw[arrow] (lgb) -- (meta);
+\draw[arrow] (meta) -- (metalgb);
+\draw[arrow] (metalgb) -- (output);
+
+\end{tikzpicture}
+\end{figure}
+
+\subsection{Control de Amenazas a la Validez Interna y Externa}
+\begin{itemize}
+    \item \textbf{Control de Fuga de Datos (\textit{Data Leakage}):} La amenaza principal en estudios con sobremuestreo sintético es aplicar SMOTE antes de la partición de prueba, contaminando el test set con instancias sintéticas. En esta investigación, el conjunto de prueba ($377,383$ muestras) permaneció strictly aislado en un archivo independiente y jamás fue sometido a SMOTE ni a ajuste del escalador.
+    \item \textbf{Control de Sobreajuste (\textit{Overfitting}):} El uso de predicciones fuera de pliegue (OOF) durante el Stacking garantiza que el meta-modelo entrene sobre predicciones no vistas por los modelos base.
+    \item \textbf{Validez Externa y Replicabilidad:} Todo el código fuente está modularizado en 5 notebooks limpios con semilla aleatoria fijada (\texttt{random\_state=42}), permitiendo la reproducción exacta de las métricas en cualquier infraestructura compatible.
+\end{itemize}
+
+\subsection{Validación de Significancia Estadística (Prueba de Wilcoxon)}
+Para probar la Hipótesis General ($H_G$), el conjunto de prueba aislado de $377,383$ muestras se dividió en $N_b = 30$ bloques estratificados independientes de $n_b \approx 12,579$ observaciones cada uno. 
+
+Para cada bloque $j \in \{1, \dots, 30\}$, se registró la métrica F1-Macro del Stacking Híbrido propuesto y de los clasificadores individuales. La hipótesis nula y alternativa se formulan como:
+\begin{align}
+H_0 &: \mu_d = 0 \quad \text{(No existe diferencia estadísticamente significativa en el F1-Macro)} \\
+H_1 &: \mu_d > 0 \quad \text{(El Stacking Híbrido presenta un F1-Macro superior al modelo base)}
+\end{align}
+
+Se aplicó la prueba no paramétrica \texttt{scipy.stats.wilcoxon(alternative='greater')} fijando $\alpha = 0.05$. Un resultado de $p\text{-valor} < 0.05$ demuestra la superioridad estadística de la propuesta.

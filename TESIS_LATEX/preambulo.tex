@@ -1,0 +1,159 @@
+% ============================================================================
+% PREÁMBULO - Configuraciones y Paquetes (Alineado a Guía UNAP 2.0 y APA 7)
+% ============================================================================
+
+% Clase de documento
+\documentclass[12pt,oneside]{book}
+
+% -------------------------------------------------------------------------
+% Paquetes fundamentales y Tipografía
+% -------------------------------------------------------------------------
+
+% Idioma español - Traducir "Cuadro" como "Tabla"
+\usepackage[spanish,es-tabla]{babel}
+\addto\captionsspanish{\def\tablename{Tabla}}
+
+% Codificación UTF-8
+\usepackage[utf8]{inputenc}
+
+% Paquete para geometría de páginas (Márgenes UNAP)
+\usepackage{geometry}
+
+% Paquete para sangría francesa en bibliografía APA 7
+\usepackage{hanging}
+
+% Paquete para ecuaciones matemáticas básicas
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+
+% Paquetes para diagramas, esquemas y tablas anchas
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, calc, backgrounds, babel}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{pdflscape}
+
+% Fuente Times New Roman (12pt según Guía UNAP)
+\usepackage{mathptmx}
+
+% Interlineado 1.5 (Configurado según estándar UNAP)
+\usepackage{setspace}
+\setstretch{1.5}
+
+% Márgenes Oficiales UNAP:
+% Izquierdo: 3.0 cm (para empastado)
+% Derecho: 2.5 cm | Superior: 2.5 cm | Inferior: 2.5 cm
+\geometry{
+    left=3.0cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% -------------------------------------------------------------------------
+% Control de Párrafos y Formato
+% -------------------------------------------------------------------------
+
+% Control de líneas huérfanas/viudas
+\widowpenalty=10000
+\clubpenalty=10000
+
+% Sangría de primera línea (1.25 cm según APA 7 / Guía UNAP)
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm}
+
+% Saltos de página controlados
+\usepackage{emptypage}
+
+% Formato de encabezados y pies de página (Numeración en pie de página centrado)
+\usepackage{fancyhdr}
+\fancyhf{}
+\fancyhead[C]{}
+\fancyfoot[C]{\thepage}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+
+% Hipervínculos en el PDF
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,urlcolor=black]{hyperref}
+
+% -------------------------------------------------------------------------
+% Configuración de Tablas y Figuras (Guía UNAP 2.0 / APA 7)
+% -------------------------------------------------------------------------
+
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+
+\usepackage{float}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{caption}
+
+% Estilo de Leyendas (Captions) alineado a Guía UNAP / APA 7:
+% "Tabla 1" o "Figura 1" en Negrita al INICIO, Salto de línea, y Título descriptivo en Cursiva
+\DeclareCaptionFormat{unap}{\textbf{#1}\\\textit{#3}}
+\captionsetup{
+    format=unap,
+    justification=raggedright,
+    singlelinecheck=false,
+    labelfont=bf,
+    font=normalsize,
+    skip=5pt
+}
+
+% -------------------------------------------------------------------------
+% Configuración de Títulos y Capítulos (Guía UNAP 2.0 / APA 7)
+% -------------------------------------------------------------------------
+
+\usepackage{titlesec}
+
+% CAPÍTULO I (16pt, Negrita, Centrado)
+% INTRODUCCIÓN (14pt, Negrita, Centrado, MAYÚSCULA)
+\titleformat{\chapter}[display]
+    {\bfseries\centering}
+    {\fontsize{16pt}{18pt}\selectfont\MakeUppercase{CAPÍTULO \Roman{chapter}}}
+    {6pt}
+    {\fontsize{14pt}{16pt}\selectfont\MakeUppercase}
+    []
+
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+
+% Configuración de profundidad de numeración y tabla de contenidos (Nivel 4: 2.2.1.1.)
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% Formato de numeración con punto al final (2.1., 2.2.1., 2.2.1.1.)
+\renewcommand{\thesection}{\thechapter.\arabic{section}.}
+\renewcommand{\thesubsection}{\thechapter.\arabic{section}.\arabic{subsection}.}
+\renewcommand{\thesubsubsection}{\thechapter.\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.}
+
+% NIVEL 2 (Ej. 2.1. TÍTULO SECCIÓN) - 14pt, MAYÚSCULA, Negrita, Izquierda
+\titleformat{\section}
+    {\bfseries\fontsize{14pt}{16pt}\selectfont\raggedright}
+    {\thesection}
+    {0.5em}
+    {\MakeUppercase}
+
+% NIVEL 3 (Ej. 2.2.1. Título Subsección) - 12pt, Minúscula, Negrita, Izquierda
+\titleformat{\subsection}
+    {\bfseries\normalsize\raggedright}
+    {\thesubsection}
+    {0.5em}
+    {}
+
+% NIVEL 4 (Ej. 2.2.1.1. Título Sub-subsección) - 12pt, Minúscula, Negrita, Izquierda
+\titleformat{\subsubsection}
+    {\bfseries\normalsize\raggedright}
+    {\thesubsubsection}
+    {0.5em}
+    {}
+
+% -------------------------------------------------------------------------
+% Listas y Viñetas
+% -------------------------------------------------------------------------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.25cm, topsep=2pt, itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.25cm, topsep=2pt, itemsep=2pt}
