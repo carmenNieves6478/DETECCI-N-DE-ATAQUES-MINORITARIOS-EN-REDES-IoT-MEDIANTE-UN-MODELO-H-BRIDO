@@ -15,13 +15,19 @@ data/
 *.tar.gz
 *.pdf
 
-# Excepcion para la presentacion y la tesis en Word/PDF
+# Excepcion para la presentacion, la tesis en Word/PDF y el articulo IEEE
 !main.docx
 !TESIS_LATEX/main.docx
 !presentacion_tesis.pdf
 !presentacion_tesis.tex
 !TESIS_LATEX/presentacion_tesis.pdf
 !TESIS_LATEX/presentacion_tesis.tex
+!articulo_ieee.pdf
+!articulo_ieee.tex
+!articulo_ieee.docx
+!TESIS_LATEX/articulo_ieee.pdf
+!TESIS_LATEX/articulo_ieee.tex
+!TESIS_LATEX/articulo_ieee.docx
 
 # Modelos pesados binarios
 *.joblib
