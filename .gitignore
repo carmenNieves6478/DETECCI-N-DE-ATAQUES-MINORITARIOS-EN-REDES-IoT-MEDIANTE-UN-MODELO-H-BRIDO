@@ -18,6 +18,8 @@ data/
 # Excepcion para la presentacion en PDF y LaTeX
 !presentacion_tesis.pdf
 !presentacion_tesis.tex
+!TESIS_LATEX/presentacion_tesis.pdf
+!TESIS_LATEX/presentacion_tesis.tex
 
 # Modelos pesados binarios
 *.joblib
