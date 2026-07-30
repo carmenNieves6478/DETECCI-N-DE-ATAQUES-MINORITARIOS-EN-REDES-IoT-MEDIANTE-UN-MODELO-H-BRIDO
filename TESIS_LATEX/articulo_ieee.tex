@@ -126,6 +126,7 @@ La Tabla \ref{tab:resultados} presenta el análisis comparativo frente a 7 clasi
 \caption{Comparativa de Desempeño sobre el Test Set Aislado ($N=377,383$)}
 \label{tab:resultados}
 \centering
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{l c c c c}
 \toprule
 \textbf{Modelo Evaluado} & \textbf{F1-Macro} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} \\
@@ -141,6 +142,7 @@ XGBoost + Borderline & 0.6995 & 0.8460 & 0.7050 & 0.6950 \\
 \textbf{Stacking Híbrido (Propuesto)} & \textbf{0.7018} & \textbf{0.8485} & \textbf{0.7075} & \textbf{0.6980} \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 Como se observa en la Tabla \ref{tab:resultados}, el \textbf{Stacking Híbrido propuesto} obtiene el desempeño superior absoluto con un \textbf{F1-Macro del 70.18\%} y una \textbf{Accuracy del 84.85\%}, superando en $+0.58\%$ de F1-Macro al mejor modelo individual (XGBoost GPU Base, 69.60\%).
