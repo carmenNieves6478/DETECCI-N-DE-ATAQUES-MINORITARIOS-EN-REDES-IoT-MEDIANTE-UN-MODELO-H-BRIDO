@@ -40,7 +40,7 @@ Internet de las Cosas, Ciberseguridad, Sistema de Detección de Intrusiones, Sta
 \section{Introducción}
 El paradigma del Internet de las Cosas (IoT) ha transformado la arquitectura tecnológica global, interconectando millones de nodos sensores y pasarelas computacionales. No obstante, esta rápida proliferación en micro, pequeñas y medianas empresas (MYPEs y PYMEs) ha expandido exponencialmente la superficie de ataque, exponiendo las redes a vectores de intrusión heterogéneos \cite{Sahoo2023}.
 
-A pesar de los avances en Machine Learning aplicados a la ciberseguridad, los Sistemas de Detección de Intrusiones en Redes (NIDS) convencionales enfrentan el desafío crítico del \textit{desbalance extremo de clases}. En conjuntos de datos representativos del tráfico IoT moderno, como el CICIoT2023 \cite{Neto2023}, más del 95\% de las muestras corresponden a tráfico legítimo o ataques volumétricos masivos (DDoS/DoS). Esta marcada asimetría genera la denominada \textit{Paradoja de la Exactitud} (\textit{Accuracy Paradox}), donde un clasificador obtiene métricas globales deceptivamente elevadas ($>84\%$) ignorando por completo ($Recall \to 0$) las intrusiones infrecuentes o minoritarias, tales como ataques basados en Web (\textit{Web-based}) y Fuerza Bruta (\textit{Brute Force}) \cite{Ferrag2022}.
+A pesar de los avances en Machine Learning aplicados a la ciberseguridad, los Sistemas de Detección de Intrusiones en Redes (NIDS) convencionales enfrentan el desafío crítico del \textit{desbalance extremo de clases}. En conjuntos de datos representativos del tráfico IoT moderno, como el CICIoT2023 \cite{Neto2023}, más del 95\% de las muestras corresponden a tráfico legítimo o ataques volumétricos masivos (DDoS/DoS). Esta marcada asimetría genera la denominada \textit{Paradoja de la Exactitud} (\textit{Accuracy Paradox}), donde un clasificador obtiene métricas globales deceptivamente elevadas ($>84\%$) ignorando por completo ($\mathrm{Recall} \to 0$) las intrusiones infrecuentes o minoritarias, tales como ataques basados en Web (\textit{Web-based}) y Fuerza Bruta (\textit{Brute Force}) \cite{Ferrag2022}.
 
 Para resolver esta problemática, el presente trabajo propone y evalúa en entorno de laboratorio un modelo de clasificación híbrido basado en la arquitectura de ensamble por \textbf{Stacking de dos niveles}. La contribución principal radica en la integración de tres componentes clave:
 \begin{enumerate}
@@ -61,7 +61,7 @@ En el ámbito del rebalanceo sintético, Chawla et al. \cite{Chawla2002} y Han e
 \section{Metodología Propuesta}
 
 \subsection{Objeto de Estudio y Conjunto de Datos}
-Se utilizó el dataset estandarizado internacional **CICIoT2023** \cite{Neto2023}, generado en un entorno físico real de 33 dispositivos IoT (cámaras IP, sensores ambientales, altavoces inteligentes y concentradores). Se procesaron 63 archivos CSV masivos, consolidando una muestra inicial de $2,515,889$ flujos de red.
+Se utilizó el dataset estandarizado internacional \textbf{CICIoT2023} \cite{Neto2023}, generado en un entorno físico real de 33 dispositivos IoT (cámaras IP, sensores ambientales, altavoces inteligentes y concentradores). Se procesaron 63 archivos CSV masivos, consolidando una muestra inicial de $2,515,889$ flujos de red.
 
 \subsection{Higiene y Preprocesamiento de Datos}
 El flujo de preprocesamiento incluyó:
@@ -72,15 +72,29 @@ El flujo de preprocesamiento incluyó:
         x_{ij}' = \frac{x_{ij} - Q_2(x_j)}{\mathrm{IQR}(x_j)}
     \end{equation}
     resistente a ráfagas de valores atípicos pasajeros (\textit{outliers}).
-    \item \textbf{Selección de Características:} Aplicación del criterio de Reducción de Impureza de Gini sobre un ensamble preliminar, seleccionando $d=29$ variables continuas discriminantes de tráfico.
+    \item \textbf{Selección de Características:} Aplicación del criterio de Reducción de Impureza de Gini sobre un ensamble preliminar, seleccionando $d=29$ variables continuas discriminantes de tráfico (ver Fig. \ref{fig:feature_importance}).
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{12_importancia_caracteristicas.png}
+\caption{Importancia relativa de las 29 características de red seleccionadas mediante la reducción de impureza de Gini.}
+\label{fig:feature_importance}
+\end{figure}
 
 \subsection{Sobremuestreo Adaptativo con Borderline-SMOTE1}
 Para mitigar el desbalance extremo ($\mathrm{IR} = 41.75:1$), se identificó el conjunto de instancias minoritarias en peligro $S_{\mathrm{danger}} \subset P$, definidas como aquellas cuyos $k$ vecinos más cercanos contienen entre $k/2$ y $k$ ejemplos de la clase mayoritaria. Se generaron muestras sintéticas a lo largo de los segmentos de recta:
 \begin{equation}
     p_{\mathrm{new}} = p_i + \delta \cdot (p_j - p_i), \quad \delta \sim U(0,1)
 \end{equation}
-elevando la muestra de entrenamiento de \textit{Web-based} a $50,000$ observaciones sintéticas balanceadas.
+elevando la muestra de entrenamiento de \textit{Web-based} a $50,000$ observaciones sintéticas balanceadas (ver Fig. \ref{fig:borderline_smote}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{15_distribucion_borderline_smote.png}
+\caption{Distribución de clases minoritarias antes y después del sobremuestreo adaptativo en la frontera $S_{\mathrm{danger}}$ con Borderline-SMOTE1.}
+\label{fig:borderline_smote}
+\end{figure}
 
 \subsection{Arquitectura Stacking Híbrida con Entropía de Shannon}
 La arquitectura se organiza en dos niveles jerárquicos:
@@ -92,7 +106,7 @@ La arquitectura se organiza en dos niveles jerárquicos:
     \item \textit{LightGBM Base} ($num\_leaves=31$, $learning\_rate=0.05$).
 \end{enumerate}
 
-Cada modelo emitó un vector de probabilidades multiclase $P_m \in \mathbb{R}^8$. A partir de estas distribuciones, se calculó la \textbf{Entropía de Shannon} $H_m(x)$ como medida de incertidumbre del clasificador:
+Cada modelo emitió un vector de probabilidades multiclase $P_m \in \mathbb{R}^8$. A partir de estas distribuciones, se calculó la \textbf{Entropía de Shannon} $H_m(x)$ como medida de incertidumbre del clasificador:
 \begin{equation}
     H_m(x) = -\sum_{c=1}^{C} P_m(y=c|x) \log_2 P_m(y=c|x)
 \end{equation}
@@ -106,7 +120,7 @@ Cada modelo emitó un vector de probabilidades multiclase $P_m \in \mathbb{R}^8$
 \subsection{Evaluación en Conjunto de Prueba Aislado}
 La evaluación se ejecutó sobre la partición independiente de prueba ($N_{\mathrm{test}} = 377,383$ observaciones, $20\%$ del total) que jamás intervino en la fase de entrenamiento ni sobremuestreo.
 
-La Tabla I presenta el análisis comparativo frente a 7 clasificadores de control.
+La Tabla \ref{tab:resultados} presenta el análisis comparativo frente a 7 clasificadores de control.
 
 \begin{table}[htbp]
 \caption{Comparativa de Desempeño sobre el Test Set Aislado ($N=377,383$)}
@@ -129,17 +143,24 @@ XGBoost + Borderline & 0.6995 & 0.8460 & 0.7050 & 0.6950 \\
 \end{tabular}
 \end{table}
 
-Como se observa en la Tabla I, el \textbf{Stacking Híbrido propuesto} obtiene el desempeño superior absoluto con un **F1-Macro del 70.18\%** y una **Accuracy del 84.85\%**, superando en $+0.58\%$ de F1-Macro al mejor modelo individual (XGBoost GPU Base, 69.60\%).
+Como se observa en la Tabla \ref{tab:resultados}, el \textbf{Stacking Híbrido propuesto} obtiene el desempeño superior absoluto con un \textbf{F1-Macro del 70.18\%} y una \textbf{Accuracy del 84.85\%}, superando en $+0.58\%$ de F1-Macro al mejor modelo individual (XGBoost GPU Base, 69.60\%).
 
 \subsection{Recuperación de Clases Minoritarias}
-El impacto principal de la hibridación con Borderline-SMOTE1 se evidenció en las clases minoritarias infrecuentes:
+El impacto principal de la hibridación con Borderline-SMOTE1 se evidenció en las clases minoritarias infrecuentes (ver matriz de confusión en Fig. \ref{fig:confusion_matrix}):
 \begin{itemize}
-    \item \textbf{Ataques de Fuerza Bruta (\textit{Brute Force}):} El F1-Score se incrementó desde un $12.30\%$ en los modelos base sin rebalanceo hasta un **$41.40\%$** en el Stacking Híbrido.
-    \item \textbf{Ataques basados en Web (\textit{Web-based}):} El F1-Score aumentó desde el $0.00\%$ (colapso predictivo total) hasta un **$33.86\%$**.
+    \item \textbf{Ataques de Fuerza Bruta (\textit{Brute Force}):} El F1-Score se incrementó desde un $12.30\%$ en los modelos base sin rebalanceo hasta un \textbf{$41.40\%$} en el Stacking Híbrido.
+    \item \textbf{Ataques basados en Web (\textit{Web-based}):} El F1-Score aumentó desde el $0.00\%$ (colapso predictivo total) hasta un \textbf{$33.86\%$}.
 \end{itemize}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{16_matriz_confusion_stacking_hibrido.png}
+\caption{Matriz de confusión multiclase normalizada del modelo Stacking Híbrido propuesto sobre el test set aislado ($N_{\mathrm{test}} = 377,383$).}
+\label{fig:confusion_matrix}
+\end{figure}
+
 \subsection{Perfilado Computacional de Viabilidad en Borde}
-Se midió el desempeño computacional en tiempo real sobre una CPU Intel Xeon / i7 equivalente a pasarelas de borde industriales:
+Se midió el desempeño computacional en tiempo real sobre hardware representativo de pasarelas de borde industriales:
 \begin{itemize}
     \item \textbf{Latencia de Inferencia por Muestra:} $8.65\,\mu s$ (microsegundos).
     \item \textbf{Tasa de Procesamiento (Throughput):} $115,613$ paquetes por segundo.
@@ -147,14 +168,21 @@ Se midió el desempeño computacional en tiempo real sobre una CPU Intel Xeon / 
 \end{itemize}
 
 \subsection{Validación Estadística de Significancia (Wilcoxon)}
-Para verificar si las diferencias observadas son estadísticamente significativas, se dividió el test set en 30 bloques independientes ($n_b \approx 12,579$ muestras) y se aplicó la \textbf{Prueba No Paramétrica de Rangos con Signo de Wilcoxon} comparando el Stacking Híbrido frente al mejor modelo base (XGBoost GPU).
+Para verificar si las diferencias observadas son estadísticamente significativas, se dividió el test set en 30 bloques independientes ($n_b \approx 12,579$ muestras) y se aplicó la \textbf{Prueba No Paramétrica de Rangos con Signo de Wilcoxon} comparando el Stacking Híbrido frente al mejor modelo base (XGBoost GPU). La Fig. \ref{fig:wilcoxon_boxplot} ilustra la distribución de las métricas F1-Macro.
 
-El resultado computó un estadístico $W^+ = 95.0$ y un **$p$-valor de $0.003744 < 0.05$**, permitiendo rechazar formalmente la Hipótesis Nula ($H_0$) y confirmar la superioridad estadística de la arquitectura propuesta con un **$99.5\%$ de nivel de confianza**.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{18_boxplot_wilcoxon.png}
+\caption{Distribución empírica del indicador F1-Macro a lo largo de 30 bloques de evaluación independiente para la Prueba de Wilcoxon ($p = 0.003744 < 0.05$).}
+\label{fig:wilcoxon_boxplot}
+\end{figure}
+
+El resultado computó un estadístico $W^+ = 95.0$ y un \textbf{$p$-valor de $0.003744 < 0.05$}, permitiendo rechazar formalmente la Hipótesis Nula ($H_0$) y confirmar la superioridad estadística de la arquitectura propuesta con un \textbf{$99.5\%$ de nivel de confianza}.
 
 \section{Conclusiones}
 En este trabajo se desarrolló y evaluó exitosamente un modelo híbrido Stacking de dos niveles que combina Random Forest, XGBoost GPU y LightGBM con cuantificación de incertidumbre por Entropía de Shannon y sobremuestreo en la frontera vía Borderline-SMOTE1 para la detección de ataques minoritarios en redes IoT.
 
-Los hallazgos demuestran que la propuesta alcanza un F1-Macro del **70.18\%** y una Accuracy del **84.85\%**, restaurando la sensibilidad predictiva en ataques minoritarios destructivos (\textit{Brute Force} y \textit{Web-based}) sin comprometer la velocidad operativa ($8.65\,\mu s$/muestra) ni la memoria RAM ($257.89\text{ MB}$).
+Los hallazgos demuestran que la propuesta alcanza un F1-Macro del \textbf{70.18\%} y una Accuracy del \textbf{84.85\%}, restaurando la sensibilidad predictiva en ataques minoritarios destructivos (\textit{Brute Force} y \textit{Web-based}) sin comprometer la velocidad operativa ($8.65\,\mu s$/muestra) ni la memoria RAM ($257.89\text{ MB}$).
 
 Como trabajo futuro, se contempla el despliegue del artefacto exportado en formato ONNX sobre pasarelas físicas en entornos reales de producción MYPE/PYME.
 
