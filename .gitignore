@@ -15,7 +15,9 @@ data/
 *.tar.gz
 *.pdf
 
-# Excepcion para la presentacion en PDF y LaTeX
+# Excepcion para la presentacion y la tesis en Word/PDF
+!main.docx
+!TESIS_LATEX/main.docx
 !presentacion_tesis.pdf
 !presentacion_tesis.tex
 !TESIS_LATEX/presentacion_tesis.pdf
