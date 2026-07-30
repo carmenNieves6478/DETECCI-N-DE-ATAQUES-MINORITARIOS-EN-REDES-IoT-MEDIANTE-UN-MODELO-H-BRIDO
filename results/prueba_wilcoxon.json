@@ -1,0 +1,17 @@
+{
+    "vs_xgb": {
+        "statistic": 95.0,
+        "p_value": 0.0037444327026605606,
+        "significant": true
+    },
+    "vs_lgb": {
+        "statistic": 74.0,
+        "p_value": 0.0006665531545877457,
+        "significant": true
+    },
+    "vs_rf": {
+        "statistic": 0.0,
+        "p_value": 1.862645149230957e-09,
+        "significant": true
+    }
+}

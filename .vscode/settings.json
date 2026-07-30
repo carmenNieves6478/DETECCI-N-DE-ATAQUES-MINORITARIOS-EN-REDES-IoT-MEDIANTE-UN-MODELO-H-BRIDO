@@ -1,0 +1,24 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "remote.autoForwardPortsFallback": 0,
+    "latex-workshop.latex.tools": [
+        {
+            "name": "tectonic",
+            "command": "/home/carmen/miniconda3/envs/tesis_iot/bin/tectonic",
+            "args": [
+                "main.tex"
+            ],
+            "env": {}
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "tectonic",
+            "tools": [
+                "tectonic"
+            ]
+        }
+    ],
+    "latex-workshop.latex.autoBuild.run": "onSave"
+}

@@ -1,0 +1,36 @@
+# Datasets y archivos grandes
+MERGED_CSV/
+data/
+*.csv
+*.parquet
+*.h5
+*.zip
+*.tar.gz
+
+# PDFs descargados y modelos de referencia
+*.pdf
+
+# Modelos pesados binarios
+*.joblib
+*.pkl
+*.bin
+*.onnx
+
+# LaTeX temporales
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+
+# Entornos virtuales y cache
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Archivos de sistema
+.DS_Store

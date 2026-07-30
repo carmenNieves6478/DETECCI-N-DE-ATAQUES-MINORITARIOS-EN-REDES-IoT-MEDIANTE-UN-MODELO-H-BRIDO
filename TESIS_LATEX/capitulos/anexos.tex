@@ -1,0 +1,42 @@
+\chapter*{ANEXOS}
+\addcontentsline{toc}{chapter}{Anexos}
+\markboth{ANEXOS}{ANEXOS}
+
+\section*{Anexo 1: Matriz de Operacionalización de Variables}
+La Matriz de Operacionalización de Variables detalla la estructuración de la Variable Independiente (\textit{Modelo Híbrido Stacking con XGBoost, LightGBM, Entropía de Shannon y Borderline-SMOTE1}) y la Variable Dependiente (\textit{Eficacia en la Detección de Ataques Minoritarios y Desempeño Computacional en Redes IoT}). Se encuentra integrada formalmente en la Tabla 1.1 del Capítulo I (Página 12).
+
+\section*{Anexo 2: Resumen de Hiperparámetros y Configuración del Modelo}
+\begin{table}[H]
+\small
+\centering
+\caption{Hiperparámetros óptimos seleccionados para los clasificadores del ensamble}
+\label{tab:hiperparametros_anexo}
+\begin{tabularx}{\textwidth}{p{3.5cm} p{10.5cm}}
+\toprule
+\textbf{Modelo} & \textbf{Configuración de Hiperparámetros Óptimos} \\
+\midrule
+\textbf{Random Forest (Nivel 0)} & \texttt{n\_estimators}=100, \texttt{max\_depth}=12, \texttt{criterion}='gini', \texttt{bootstrap}=True, \texttt{random\_state}=42. \\
+\textbf{XGBoost GPU (Nivel 0)} & \texttt{n\_estimators}=100, \texttt{max\_depth}=6, \texttt{learning\_rate}=0.2, \texttt{tree\_method}='hist', \texttt{device}='cuda', \texttt{eval\_metric}='mlogloss'. \\
+\textbf{LightGBM Base (Nivel 0)} & \texttt{n\_estimators}=100, \texttt{max\_depth}=6, \texttt{learning\_rate}=0.1, \texttt{boosting\_type}='gbdt', \texttt{subsample}=0.8, \texttt{colsample\_bytree}=0.8. \\
+\textbf{Borderline-SMOTE1} & \texttt{kind}='borderline-1', \texttt{k\_neighbors}=5, \texttt{m\_neighbors}=10, \texttt{sampling\_strategy}=\{Web-based: 100000, Brute Force: 100000\}. \\
+\textbf{Meta-LightGBM (Nivel 1)} & \texttt{n\_estimators}=100, \texttt{learning\_rate}=0.05, \texttt{num\_leaves}=31, \texttt{max\_depth}=6, \texttt{subsample}=0.8, \texttt{colsample\_bytree}=0.8. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Anexo 3: Reporte de Resultados de la Prueba Estadística de Wilcoxon}
+\begin{table}[H]
+\small
+\centering
+\caption{Prueba de Wilcoxon sobre 30 bloques independientes del conjunto de prueba}
+\label{tab:wilcoxon_anexo}
+\begin{tabularx}{\textwidth}{p{4.5cm} c c c}
+\toprule
+\textbf{Par de Comparación} & \textbf{Estadístico de Prueba $W^+$} & \textbf{$p$-valor Calculado} & \textbf{Significativo ($\alpha=0.05$)} \\
+\midrule
+Stacking Híbrido vs. XGBoost GPU & 95.0 & 0.003744 & SÍ \\
+Stacking Híbrido vs. LightGBM Base & 74.0 & 0.000667 & SÍ \\
+Stacking Híbrido vs. Random Forest & 0.0 & $1.86 \times 10^{-9}$ & SÍ \\
+\bottomrule
+\end{tabularx}
+\end{table}
